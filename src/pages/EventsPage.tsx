@@ -151,7 +151,7 @@ function CalendarView({ events, onEventClick }: CalendarViewProps) {
   );
 }
 
-export function EventsPage() {
+export function EventsPage({ managementMode = false }: { managementMode?: boolean }) {
   const { user } = useAuth();
   const [events, setEvents] = useState(mockEvents);
   const [selectedType, setSelectedType] = useState<EventType | 'all'>('all');
@@ -175,7 +175,9 @@ export function EventsPage() {
     feedbackText: '',
   });
 
-  const canCreateEvent = user?.role === 'faculty' || user?.role === 'admin';
+  const isManager = user?.role === 'alumni' || user?.role === 'faculty' || user?.role === 'admin';
+  const myEvents = managementMode ? events.filter(event => event.createdBy === user?.id) : events;
+  const canCreateEvent = user?.role === 'faculty' || user?.role === 'admin' || user?.role === 'alumni';
 
   const eventTypes: { value: EventType | 'all'; label: string }[] = [
     { value: 'all', label: 'All Events' },
@@ -187,7 +189,7 @@ export function EventsPage() {
     { value: 'social', label: 'Social' },
   ];
 
-  const filteredEvents = events.filter((event) => {
+  const filteredEvents = myEvents.filter((event) => {
     const matchesType = selectedType === 'all' || event.eventType === selectedType;
     const matchesSearch =
       event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -296,13 +298,15 @@ export function EventsPage() {
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
-        <h1 className="text-3xl font-bold text-gray-900">Campus Events</h1>
+        <h1 className="text-3xl font-bold text-gray-900">
+          {managementMode ? 'Manage My Events' : 'Campus Events'}
+        </h1>
         {canCreateEvent && (
           <button
             onClick={() => setShowCreateEvent(true)}
-            className="flex items-center justify-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
           >
-            <Plus size={20} />
+            <Plus size={18} />
             <span>Create Event</span>
           </button>
         )}

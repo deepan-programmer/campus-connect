@@ -71,70 +71,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         graduationYear: 2018,
         currentEmployer: 'Microsoft',
         profileVisibility: 'public',
-        avatarUrl: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=200',
         skills: [
           { id: '1', skillName: 'React', endorsements: 15 },
           { id: '2', skillName: 'TypeScript', endorsements: 10 },
         ],
         interests: ['Mentorship', 'Web Development', 'Software Architecture'],
-      };
-    } else if (email.includes('faculty')) {
-      mockUser = {
-        id: '4',
-        email,
-        role: 'faculty',
-        emailVerified: true,
-        createdAt: new Date().toISOString(),
-      };
-      
-      mockProfile = {
-        id: '4',
-        firstName: 'Dr. Emily',
-        lastName: 'Rodriguez',
-        bio: 'Professor of Computer Science. Passionate about education and innovation.',
-        department: 'Computer Science',
-        profileVisibility: 'public',
-        skills: [
-          { id: '7', skillName: 'Algorithms', endorsements: 25 },
-          { id: '8', skillName: 'Research', endorsements: 30 },
-        ],
-        interests: ['Education', 'Research', 'Mentoring'],
-      };
-    } else {
-      // Default student
-      mockUser = {
-        id: '3',
-        email,
-        role: 'student',
-        emailVerified: true,
-        createdAt: new Date().toISOString(),
-      };
-      
-      mockProfile = {
-        id: '3',
-        firstName: 'Michael',
-        lastName: 'Chen',
-        bio: 'Data Science enthusiast. Looking to connect with fellow students.',
-        department: 'Data Science',
-        graduationYear: 2024,
-        profileVisibility: 'public',
-        skills: [
-          { id: '5', skillName: 'Python', endorsements: 7 },
-          { id: '6', skillName: 'Machine Learning', endorsements: 5 },
-        ],
-        interests: ['AI', 'Research', 'Basketball'],
-      };
-    }
+      skills: [
+        { id: '1', skillName: 'React', endorsements: 5 },
+        { id: '2', skillName: 'TypeScript', endorsements: 3 },
+      ],
+      interests: ['Web Development', 'Machine Learning', 'Entrepreneurship'],
+    };
 
     localStorage.setItem('user', JSON.stringify(mockUser));
     localStorage.setItem('profile', JSON.stringify(mockProfile));
 
-    // Use synchronous state updates to ensure they complete before login resolves
     setUser(mockUser);
     setProfile(mockProfile);
-    
-    // Add a small delay to ensure state propagates before navigation
-    await new Promise(resolve => setTimeout(resolve, 100));
   };
 
   const signup = async (

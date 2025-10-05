@@ -29,6 +29,12 @@ export function LoginPage({ onNavigate }: LoginPageProps) {
     try {
       if (isLogin) {
         await login(email, password);
+        // Navigate to mentorship page if user is alumni or faculty
+        if (email.includes('alumni') || email.includes('faculty')) {
+          onNavigate('mentorship');
+        } else {
+          onNavigate('feed');
+        }
       } else {
         if (!firstName || !lastName) {
           setError('Please fill in all required fields');
@@ -42,8 +48,13 @@ export function LoginPage({ onNavigate }: LoginPageProps) {
           graduationYear: graduationYear ? parseInt(graduationYear) : undefined,
           currentEmployer: role === 'alumni' ? currentEmployer : undefined,
         });
+        // Navigate to mentorship page if user is alumni or faculty
+        if (role === 'alumni' || role === 'faculty') {
+          onNavigate('mentorship');
+        } else {
+          onNavigate('feed');
+        }
       }
-      onNavigate('feed');
     } catch (err) {
       setError('Authentication failed. Please try again.');
     } finally {

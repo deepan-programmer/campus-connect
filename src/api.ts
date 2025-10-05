@@ -1,4 +1,15 @@
-const BASE = process.env.REACT_APP_API_URL || process.env.VITE_API_URL || 'http://localhost:4000/api';
+// Use Vite's import.meta.env in the browser. Fall back to process.env when available.
+let _env: Record<string, any> = {};
+try {
+  // In Vite-powered dev builds this will be defined
+  _env = (import.meta as any).env || {};
+} catch (e) {
+  if (typeof process !== 'undefined' && (process as any).env) {
+    _env = (process as any).env;
+  }
+}
+
+const BASE = _env.VITE_API_URL || _env.REACT_APP_API_URL || 'http://localhost:4000/api';
 
 export async function api(path: string, options: any = {}): Promise<any> {
   const token = localStorage.getItem('token');

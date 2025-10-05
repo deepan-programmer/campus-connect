@@ -15,7 +15,7 @@ router.get('/', authenticate, (req, res) => {
   res.json(results);
 });
 
-router.post('/', authenticate, authorizeRoles('faculty', 'admin'), (req, res) => {
+router.post('/', authenticate, authorizeRoles('faculty', 'admin', 'alumni'), (req, res) => {
   const data = req.body;
   if (!data.title || !data.startDate) return res.status(400).json({ error: 'Missing fields' });
   const event = {

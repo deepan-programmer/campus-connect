@@ -26,6 +26,19 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
     ...(user?.role === 'admin' ? [{ id: 'admin', label: 'Admin', icon: Settings }] : []),
   ];
 
+  const alumniFacultyNavItems = [
+    { id: 'feed', label: 'Feed', icon: Home },
+    { id: 'events', label: 'Events', icon: Calendar },
+    { id: 'connections', label: 'Network', icon: Users },
+    { id: 'mentorship', label: 'Mentorship', icon: Briefcase },
+    { id: 'messages', label: 'Messages', icon: MessageCircle, badge: unreadMessages },
+    { id: 'manage-events', label: 'Manage Events', icon: Calendar },
+    { id: 'manage-mentorship', label: 'Manage Mentees', icon: Users },
+    ...(user?.role === 'admin' ? [{ id: 'admin', label: 'Admin', icon: Settings }] : []),
+  ];
+
+  const currentNavItems = (user?.role === 'alumni' || user?.role === 'faculty') ? alumniFacultyNavItems : navItems;
+
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -43,7 +56,7 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
                 <span className="ml-2 text-xl font-bold text-gray-900">CampusConnect</span>
               </div>
               <div className="hidden lg:ml-10 lg:flex lg:space-x-1">
-                {navItems.map((item) => {
+                {currentNavItems.map((item) => {
                   const Icon = item.icon;
                   return (
                     <button
@@ -106,7 +119,7 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-gray-200 bg-white">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {navItems.map((item) => {
+              {currentNavItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <button

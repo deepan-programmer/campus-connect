@@ -14,6 +14,12 @@ export type PostType = 'announcement' | 'update' | 'event';
 
 export type NotificationType = 'connection' | 'mentorship' | 'event' | 'post';
 
+export type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'overdue';
+
+export type ProjectStatus = 'planning' | 'in_progress' | 'completed' | 'on_hold';
+
+export type DoubtStatus = 'open' | 'resolved' | 'in_progress';
+
 export interface User {
   id: string;
   email: string;
@@ -137,5 +143,85 @@ export interface Notification {
   message: string;
   link?: string;
   read: boolean;
+  createdAt: string;
+}
+
+export interface MentorshipTask {
+  id: string;
+  mentorshipId: string;
+  mentorId: string;
+  studentId: string;
+  title: string;
+  description: string;
+  status: TaskStatus;
+  dueDate?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MentorshipProject {
+  id: string;
+  mentorshipId: string;
+  mentorId: string;
+  studentId: string;
+  title: string;
+  description: string;
+  status: ProjectStatus;
+  progress: number; // 0-100
+  milestones: ProjectMilestone[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectMilestone {
+  id: string;
+  projectId: string;
+  title: string;
+  description: string;
+  completed: boolean;
+  dueDate?: string;
+}
+
+export interface MentorshipDoubt {
+  id: string;
+  mentorshipId: string;
+  studentId: string;
+  mentorId: string;
+  question: string;
+  answer?: string;
+  status: DoubtStatus;
+  createdAt: string;
+  answeredAt?: string;
+}
+
+export interface MentorshipFeedback {
+  id: string;
+  mentorshipId: string;
+  studentId: string;
+  mentorId: string;
+  rating: number; // 1-5
+  feedbackText: string;
+  createdAt: string;
+}
+
+export interface DailyProgress {
+  id: string;
+  mentorshipId: string;
+  studentId: string;
+  date: string;
+  summary: string;
+  hoursWorked: number;
+  tasksCompleted: string[];
+  challenges?: string;
+  createdAt: string;
+}
+
+export interface ProjectUpdate {
+  id: string;
+  projectId: string;
+  studentId: string;
+  title: string;
+  description: string;
+  attachments?: string[];
   createdAt: string;
 }

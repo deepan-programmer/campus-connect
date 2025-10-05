@@ -1,6 +1,22 @@
-import { Event, Post, Connection, MentorshipRequest, Notification, Profile } from '../types';
+import { Event, Post, Connection, MentorshipRequest, Notification, Profile, MentorshipTask, MentorshipProject, MentorshipDoubt, MentorshipFeedback, DailyProgress, ProjectUpdate } from '../types';
 
 export const mockProfiles: Profile[] = [
+  {
+    id: '1',
+    firstName: 'John',
+    lastName: 'Doe',
+    bio: 'Alumni working at Microsoft. Passionate about mentoring and helping students grow.',
+    department: 'Computer Science',
+    graduationYear: 2018,
+    currentEmployer: 'Microsoft',
+    profileVisibility: 'public',
+    avatarUrl: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=200',
+    skills: [
+      { id: '1', skillName: 'React', endorsements: 15 },
+      { id: '2', skillName: 'TypeScript', endorsements: 10 },
+    ],
+    interests: ['Mentorship', 'Web Development', 'Software Architecture'],
+  },
   {
     id: '2',
     firstName: 'Sarah',
@@ -45,6 +61,36 @@ export const mockProfiles: Profile[] = [
       { id: '8', skillName: 'Research', endorsements: 30 },
     ],
     interests: ['Education', 'Research', 'Mentoring'],
+  },
+  {
+    id: '5',
+    firstName: 'Alex',
+    lastName: 'Wang',
+    bio: 'Junior computer science student looking for mentorship in software development.',
+    department: 'Computer Science',
+    graduationYear: 2026,
+    profileVisibility: 'public',
+    avatarUrl: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=200',
+    skills: [
+      { id: '9', skillName: 'Java', endorsements: 3 },
+      { id: '10', skillName: 'Web Development', endorsements: 2 },
+    ],
+    interests: ['Mobile Development', 'Startups', 'Open Source'],
+  },
+  {
+    id: '6',
+    firstName: 'Jessica',
+    lastName: 'Lee',
+    bio: 'Computer Engineering student interested in embedded systems and IoT.',
+    department: 'Computer Engineering',
+    graduationYear: 2025,
+    profileVisibility: 'public',
+    avatarUrl: 'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=200',
+    skills: [
+      { id: '11', skillName: 'C++', endorsements: 5 },
+      { id: '12', skillName: 'IoT', endorsements: 3 },
+    ],
+    interests: ['Embedded Systems', 'Hardware Design', 'Robotics'],
   },
 ];
 
@@ -175,12 +221,30 @@ export const mockConnections: Connection[] = [
 export const mockMentorshipRequests: MentorshipRequest[] = [
   {
     id: '1',
-    studentId: '1',
-    mentorId: '2',
+    studentId: '3',
+    mentorId: '1',
     status: 'active',
     matchScore: 0.85,
-    message: 'I would love to learn more about working at Google and transitioning from student to professional software engineer.',
+    message: 'I would love your guidance on data science projects and machine learning.',
     createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: '2',
+    studentId: '5',
+    mentorId: '1',
+    status: 'active',
+    matchScore: 0.75,
+    message: 'I am interested in your web development expertise and would love guidance on my portfolio project.',
+    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: '3',
+    studentId: '6',
+    mentorId: '1',
+    status: 'pending',
+    matchScore: 0.68,
+    message: 'Looking for guidance on career paths in the tech industry.',
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
   },
 ];
 
@@ -216,3 +280,188 @@ export const mockNotifications: Notification[] = [
     createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
   },
 ];
+
+export const mockMentorshipTasks: MentorshipTask[] = [
+  {
+    id: '1',
+    mentorshipId: '1',
+    mentorId: '1',
+    studentId: '3',
+    title: 'Complete Python Data Analysis Project',
+    description: 'Analyze a dataset using pandas and create visualizations with matplotlib.',
+    status: 'in_progress',
+    dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: '2',
+    mentorshipId: '2',
+    mentorId: '1',
+    studentId: '5',
+    title: 'Prepare Portfolio Website',
+    description: 'Create a professional portfolio website using React and Tailwind CSS to showcase your projects.',
+    status: 'pending',
+    dueDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+];
+
+export const mockMentorshipProjects: MentorshipProject[] = [
+  {
+    id: '1',
+    mentorshipId: '1',
+    mentorId: '1',
+    studentId: '3',
+    title: 'Machine Learning Model for Predictive Analytics',
+    description: 'Building a machine learning model to analyze and predict trends in user behavior data.',
+    status: 'in_progress',
+    progress: 65,
+    milestones: [
+      {
+        id: '1',
+        projectId: '1',
+        title: 'Setup Project Structure',
+        description: 'Initialize React app, setup backend with Express, configure database.',
+        completed: true,
+        dueDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '2',
+        projectId: '1',
+        title: 'Implement User Authentication',
+        description: 'Add login, registration, and JWT token management.',
+        completed: true,
+        dueDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '3',
+        projectId: '1',
+        title: 'Product Catalog',
+        description: 'Create product listing, search, and filtering functionality.',
+        completed: false,
+        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '4',
+        projectId: '1',
+        title: 'Shopping Cart & Checkout',
+        description: 'Implement cart functionality and payment integration.',
+        completed: false,
+        dueDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+    ],
+    createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+];
+
+export const mockMentorshipDoubts: MentorshipDoubt[] = [
+  {
+    id: '1',
+    mentorshipId: '1',
+    studentId: '3',
+    mentorId: '1',
+    question: 'How do I optimize Python code for large datasets?',
+    answer: 'Use vectorized operations with NumPy, implement efficient data structures, and consider using libraries like Dask for larger-than-memory computations.',
+    status: 'resolved',
+    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    answeredAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: '2',
+    mentorshipId: '2',
+    studentId: '5',
+    mentorId: '1',
+    question: 'What are the best practices for responsive web design?',
+    status: 'open',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+];
+
+export const mockMentorshipFeedback: MentorshipFeedback[] = [
+  {
+    id: '1',
+    mentorshipId: '1',
+    studentId: '3',
+    mentorId: '1',
+    rating: 5,
+    feedbackText: 'John has been an incredible mentor! His guidance on machine learning projects has been invaluable. He always makes time to answer my questions and provides practical insights from his industry experience.',
+    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: '2',
+    mentorshipId: '2',
+    studentId: '5',
+    mentorId: '1',
+    rating: 5,
+    feedbackText: 'Great mentor who provides clear explanations and helpful resources. Really appreciate the detailed code reviews and career advice.',
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+];
+
+export const mockDailyProgress: DailyProgress[] = [
+  {
+    id: '1',
+    mentorshipId: '1',
+    studentId: '3',
+    date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    summary: 'Worked on data preprocessing and feature engineering for the ML model.',
+    hoursWorked: 4,
+    tasksCompleted: ['Cleaned dataset', 'Created feature vectors', 'Tested different preprocessing techniques'],
+    challenges: 'Struggled with handling missing values in categorical columns.',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: '2',
+    mentorshipId: '1',
+    studentId: '3',
+    date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    summary: 'Started exploratory data analysis and created initial visualizations.',
+    hoursWorked: 3.5,
+    tasksCompleted: ['Set up Jupyter notebook', 'Created basic plots', 'Analyzed data distributions'],
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: '3',
+    mentorshipId: '2',
+    studentId: '5',
+    date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    summary: 'Implemented responsive navigation and hero section for portfolio website.',
+    hoursWorked: 5,
+    tasksCompleted: ['Created navbar component', 'Added mobile menu', 'Designed hero section'],
+    challenges: 'CSS animations not working smoothly on mobile devices.',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: '4',
+    mentorshipId: '2',
+    studentId: '5',
+    date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    summary: 'Set up React project with TypeScript and Tailwind CSS.',
+    hoursWorked: 2,
+    tasksCompleted: ['Initialized React app', 'Configured Tailwind', 'Set up routing'],
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+];
+
+export const mockProjectUpdates: ProjectUpdate[] = [
+  {
+    id: '1',
+    projectId: '1',
+    studentId: '3',
+    title: 'Completed Data Preprocessing Phase',
+    description: 'Successfully cleaned and preprocessed the dataset. Implemented feature scaling and handled missing values. Ready to move to model training phase.',
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: '2',
+    projectId: '1',
+    studentId: '3',
+    title: 'Model Training Progress Update',
+    description: 'Trained initial models using Random Forest and XGBoost. Achieved 85% accuracy on validation set. Working on hyperparameter tuning.',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+];
+

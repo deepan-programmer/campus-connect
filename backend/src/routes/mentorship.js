@@ -37,4 +37,24 @@ router.post('/request', authenticate, (req, res) => {
   res.json({ ok: true, request: { id: `${Date.now()}`, from, to, message, status: 'pending' } });
 });
 
+router.post('/accept/:requestId', authenticate, (req, res) => {
+  const userId = req.user.sub;
+  const user = _usersStore.find(u => u.id === userId);
+  if (!user || (user.role !== 'alumni' && user.role !== 'faculty')) {
+    return res.status(403).json({ error: 'Only alumni and faculty can accept mentorship requests' });
+  }
+  // In a real app, find and update the request status
+  res.json({ ok: true, message: 'Mentorship request accepted' });
+});
+
+router.post('/reject/:requestId', authenticate, (req, res) => {
+  const userId = req.user.sub;
+  const user = _usersStore.find(u => u.id === userId);
+  if (!user || (user.role !== 'alumni' && user.role !== 'faculty')) {
+    return res.status(403).json({ error: 'Only alumni and faculty can reject mentorship requests' });
+  }
+  // In a real app, find and update the request status
+  res.json({ ok: true, message: 'Mentorship request rejected' });
+});
+
 module.exports = { mentorshipRouter: router };
