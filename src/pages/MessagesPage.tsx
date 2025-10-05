@@ -122,7 +122,7 @@ export function MessagesPage() {
                   }`}
                 >
                   <div className="relative">
-                    {otherUser.avatarUrl ? (
+                    {'avatarUrl' in otherUser && otherUser.avatarUrl ? (
                       <img
                         src={otherUser.avatarUrl}
                         alt={`${otherUser.firstName} ${otherUser.lastName}`}
@@ -188,7 +188,7 @@ export function MessagesPage() {
                   const otherUser = getOtherParticipant(selectedConversation);
                   return (
                     <>
-                      {otherUser.avatarUrl ? (
+                      {'avatarUrl' in otherUser && otherUser.avatarUrl ? (
                         <img
                           src={otherUser.avatarUrl}
                           alt={`${otherUser.firstName} ${otherUser.lastName}`}

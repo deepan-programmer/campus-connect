@@ -8,7 +8,7 @@ export function AdminPage() {
   const totalConnections = mockConnections.filter((c) => c.status === 'accepted').length;
 
   const totalRsvps = mockEvents.reduce(
-    (sum, event) => sum + event.rsvpCount.going + event.rsvpCount.interesting,
+    (sum, event) => sum + event.rsvpCount.going + event.rsvpCount.interested,
     0
   );
 

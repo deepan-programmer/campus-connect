@@ -175,7 +175,6 @@ export function EventsPage({ managementMode = false }: { managementMode?: boolea
     feedbackText: '',
   });
 
-  const isManager = user?.role === 'alumni' || user?.role === 'faculty' || user?.role === 'admin';
   const myEvents = managementMode ? events.filter(event => event.createdBy === user?.id) : events;
   const canCreateEvent = user?.role === 'faculty' || user?.role === 'admin' || user?.role === 'alumni';
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CreditCard as Edit2, Plus, X, ThumbsUp, Briefcase, GraduationCap, Mail, Globe } from 'lucide-react';
+import { CreditCard as Edit2, Plus, X, ThumbsUp, Briefcase, GraduationCap, Globe } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export function ProfilePage() {

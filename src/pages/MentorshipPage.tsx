@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Users, Award, TrendingUp, MessageSquare, CheckCircle, Plus, Target, FolderOpen, HelpCircle, Star, Clock, Calendar, BarChart3 } from 'lucide-react';
 import { mockProfiles, mockMentorshipRequests, mockMentorshipTasks, mockMentorshipProjects, mockMentorshipDoubts, mockMentorshipFeedback, mockDailyProgress, mockProjectUpdates } from '../data/mockData';
 import { useAuth } from '../contexts/AuthContext';
-import { MentorshipTask, MentorshipProject, MentorshipDoubt, TaskStatus, ProjectStatus, DoubtStatus } from '../types';
+import { TaskStatus } from '../types';
 
 export function MentorshipPage() {
   const { profile, user } = useAuth();
@@ -10,8 +10,8 @@ export function MentorshipPage() {
   const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
   const [requestMessage, setRequestMessage] = useState('');
   const [mentorshipTasks, setMentorshipTasks] = useState(mockMentorshipTasks);
-  const [mentorshipProjects, setMentorshipProjects] = useState(mockMentorshipProjects);
-  const [mentorshipDoubts, setMentorshipDoubts] = useState(mockMentorshipDoubts);
+  const [mentorshipProjects] = useState(mockMentorshipProjects);
+  const [mentorshipDoubts] = useState(mockMentorshipDoubts);
   const [mentorshipFeedback] = useState(mockMentorshipFeedback);
   const [dailyProgress] = useState(mockDailyProgress);
   const [projectUpdates] = useState(mockProjectUpdates);
@@ -146,15 +146,6 @@ export function MentorshipPage() {
     );
   };
 
-  const handleAnswerDoubt = (doubtId: string, answer: string) => {
-    setMentorshipDoubts(doubts =>
-      doubts.map(doubt =>
-        doubt.id === doubtId
-          ? { ...doubt, answer, status: 'resolved' as DoubtStatus, answeredAt: new Date().toISOString() }
-          : doubt
-      )
-    );
-  };
 
   return (
     <div>

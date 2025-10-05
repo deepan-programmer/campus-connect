@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, Profile } from '../types';
-import { api } from '../api';
+import { supabase } from '../lib/supabase';
 
 interface AuthContextType {
   user: User | null;
@@ -29,31 +29,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     setIsLoading(false);
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          const mockUser: User = {
+            id: session.user.id,
+            email: session.user.email || '',
+            role: 'student',
+            emailVerified: true,
+            createdAt: session.user.created_at || new Date().toISOString(),
+          };
+          setUser(mockUser);
+          localStorage.setItem('user', JSON.stringify(mockUser));
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setProfile(null);
+          localStorage.removeItem('user');
+          localStorage.removeItem('profile');
+        }
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
-    // Try backend login if available
-    try {
-      const resp = await api('/auth/login', { method: 'POST', body: { email, password } });
-      if (resp && resp.token) {
-        localStorage.setItem('token', resp.token);
-        localStorage.setItem('user', JSON.stringify(resp.user));
-        // attempt to fetch profile - backend doesn't have profile route yet; use user as minimal
-        localStorage.setItem('profile', JSON.stringify({ id: resp.user.id, firstName: resp.user.name }));
-        setUser(resp.user);
-        setProfile({ id: resp.user.id, firstName: resp.user.name } as Profile);
-        return;
-      }
-    } catch (e) {
-      // ignore and fall back to mock
-    }
-
-    // For easier testing, we'll use predefined profiles based on email
     let mockUser: User;
     let mockProfile: Profile;
-    
+
     if (email.includes('alumni')) {
-      // Use John Doe profile from mockProfiles
       mockUser = {
         id: '1',
         email,
@@ -61,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         emailVerified: true,
         createdAt: new Date().toISOString(),
       };
-      
+
       mockProfile = {
         id: '1',
         firstName: 'John',
@@ -86,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         emailVerified: true,
         createdAt: new Date().toISOString(),
       };
-      
+
       mockProfile = {
         id: '4',
         firstName: 'Dr. Emily',
@@ -101,7 +108,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         interests: ['Education', 'Research', 'Mentoring'],
       };
     } else {
-      // Default student
       mockUser = {
         id: '3',
         email,
@@ -109,7 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         emailVerified: true,
         createdAt: new Date().toISOString(),
       };
-      
+
       mockProfile = {
         id: '3',
         firstName: 'Michael',
@@ -129,11 +135,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('user', JSON.stringify(mockUser));
     localStorage.setItem('profile', JSON.stringify(mockProfile));
 
-    // Use synchronous state updates to ensure they complete before login resolves
     setUser(mockUser);
     setProfile(mockProfile);
-    
-    // Add a small delay to ensure state propagates before navigation
+
     await new Promise(resolve => setTimeout(resolve, 100));
   };
 
@@ -143,33 +147,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     role: string,
     profileData: Partial<Profile>
   ) => {
-    try {
-      const resp = await api('/auth/signup', { method: 'POST', body: { email, password, name: profileData.firstName || email, role } });
-      if (resp && resp.token) {
-        localStorage.setItem('token', resp.token);
-        localStorage.setItem('user', JSON.stringify(resp.user));
-        localStorage.setItem('profile', JSON.stringify({ id: resp.user.id, firstName: resp.user.name }));
-        setUser(resp.user);
-        setProfile({ id: resp.user.id, firstName: resp.user.name } as Profile);
-        return;
-      }
-    } catch (e) {
-      // ignore and fallback to mock
-    }
-
-    const newUser: User = {
-      id: Math.random().toString(36).substr(2, 9),
+    const mockUser: User = {
+      id: Math.random().toString(36).substring(7),
       email,
-      role: role as any,
+      role: role as User['role'],
       emailVerified: false,
       createdAt: new Date().toISOString(),
     };
 
-    const newProfile: Profile = {
-      id: newUser.id,
+    const mockProfile: Profile = {
+      id: mockUser.id,
       firstName: profileData.firstName || '',
       lastName: profileData.lastName || '',
-      bio: profileData.bio,
+      bio: profileData.bio || '',
       department: profileData.department,
       graduationYear: profileData.graduationYear,
       currentEmployer: profileData.currentEmployer,
@@ -178,18 +168,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       interests: [],
     };
 
-    localStorage.setItem('user', JSON.stringify(newUser));
-    localStorage.setItem('profile', JSON.stringify(newProfile));
+    localStorage.setItem('user', JSON.stringify(mockUser));
+    localStorage.setItem('profile', JSON.stringify(mockProfile));
 
-    setUser(newUser);
-    setProfile(newProfile);
+    setUser(mockUser);
+    setProfile(mockProfile);
   };
 
   const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('profile');
+    localStorage.removeItem('token');
     setUser(null);
     setProfile(null);
+    supabase.auth.signOut();
   };
 
   const updateProfile = async (data: Partial<Profile>) => {
