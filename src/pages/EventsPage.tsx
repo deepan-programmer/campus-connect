@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Calendar, MapPin, Users, Star, Filter, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
-import { mockEvents, mockProfiles } from '../data/mockData';
+import { mockEvents } from '../data/mockData';
 import { Event, EventType } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 

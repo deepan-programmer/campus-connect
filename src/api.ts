@@ -1,8 +1,6 @@
 const BASE = process.env.REACT_APP_API_URL || process.env.VITE_API_URL || 'http://localhost:4000/api';
 
-type ApiOptions = RequestInit & { body?: any };
-
-export async function api(path: string, options: ApiOptions = {}): Promise<any> {
+export async function api(path: string, options: any = {}): Promise<any> {
   const token = localStorage.getItem('token');
   const headers: Record<string, string> = (options.headers as Record<string, string>) || {};
   if (token) headers['Authorization'] = `Bearer ${token}`;
