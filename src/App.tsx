@@ -79,25 +79,7 @@ function AppContent() {
   }
 
   if (!user) {
-    return (
-      <>
-        <LoginPage onNavigate={setCurrentPage} />
-        <div className="fixed bottom-4 right-4 flex space-x-2">
-          <a 
-            href="?alumni=true&page=mentorship" 
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-colors"
-          >
-            Quick Login as Alumni
-          </a>
-          <a 
-            href="?alumni=true&page=test-mentorship" 
-            className="px-4 py-2 bg-green-600 text-white rounded-lg shadow-lg hover:bg-green-700 transition-colors"
-          >
-            Test Mentorship Page
-          </a>
-        </div>
-      </>
-    );
+    return <LoginPage onNavigate={setCurrentPage} />;
   }
 
   const renderPage = () => {

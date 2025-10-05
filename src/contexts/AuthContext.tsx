@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, _password: string) => {
     let mockUser: User;
     let mockProfile: Profile;
 
@@ -143,7 +143,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signup = async (
     email: string,
-    password: string,
+    _password: string,
     role: string,
     profileData: Partial<Profile>
   ) => {
