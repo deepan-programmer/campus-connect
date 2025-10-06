@@ -1,13 +1,41 @@
-import { useState } from 'react';
-import { UserPlus, UserCheck, X, Search, Briefcase, GraduationCap } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { UserPlus, UserCheck, X, Search, Briefcase, GraduationCap, MessageCircle } from 'lucide-react';
 import { mockProfiles, mockConnections } from '../data/mockData';
 import { useAuth } from '../contexts/AuthContext';
+import { sendConnectionRequest, acceptConnection, rejectConnection, getConnections, subscribeToConnectionChanges } from '../services/connections';
+import { getOrCreateConversation } from '../services/messaging';
 
 export function ConnectionsPage() {
   const { profile } = useAuth();
   const [connections, setConnections] = useState(mockConnections);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'discover' | 'myNetwork' | 'requests'>('discover');
+  const [useSupabase, setUseSupabase] = useState(false);
+
+  useEffect(() => {
+    loadConnections();
+
+    const unsubscribe = subscribeToConnectionChanges(() => {
+      loadConnections();
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  const loadConnections = async () => {
+    try {
+      const data = await getConnections();
+      if (data && data.length >= 0) {
+        setUseSupabase(true);
+        setConnections(data as any);
+      }
+    } catch (error) {
+      console.error('Error loading connections:', error);
+      setUseSupabase(false);
+    }
+  };
 
   const myConnections = connections.filter(
     (c) =>
@@ -35,25 +63,65 @@ export function ConnectionsPage() {
     );
   });
 
-  const handleConnect = (userId: string) => {
-    const newConnection = {
-      id: Math.random().toString(36).substr(2, 9),
-      requesterId: profile!.id,
-      receiverId: userId,
-      status: 'pending' as const,
-      createdAt: new Date().toISOString(),
-    };
-    setConnections([...connections, newConnection]);
+  const handleConnect = async (userId: string) => {
+    try {
+      if (useSupabase) {
+        await sendConnectionRequest(userId);
+        await loadConnections();
+      } else {
+        const newConnection = {
+          id: Math.random().toString(36).substr(2, 9),
+          requesterId: profile!.id,
+          receiverId: userId,
+          status: 'pending' as const,
+          createdAt: new Date().toISOString(),
+        };
+        setConnections([...connections, newConnection]);
+      }
+    } catch (error) {
+      console.error('Error sending connection request:', error);
+      alert('Failed to send connection request');
+    }
   };
 
-  const handleAccept = (connectionId: string) => {
-    setConnections(
-      connections.map((c) => (c.id === connectionId ? { ...c, status: 'accepted' as const } : c))
-    );
+  const handleAccept = async (connectionId: string) => {
+    try {
+      if (useSupabase) {
+        await acceptConnection(connectionId);
+        await loadConnections();
+      } else {
+        setConnections(
+          connections.map((c) => (c.id === connectionId ? { ...c, status: 'accepted' as const } : c))
+        );
+      }
+    } catch (error) {
+      console.error('Error accepting connection:', error);
+      alert('Failed to accept connection');
+    }
   };
 
-  const handleReject = (connectionId: string) => {
-    setConnections(connections.filter((c) => c.id !== connectionId));
+  const handleReject = async (connectionId: string) => {
+    try {
+      if (useSupabase) {
+        await rejectConnection(connectionId);
+        await loadConnections();
+      } else {
+        setConnections(connections.filter((c) => c.id !== connectionId));
+      }
+    } catch (error) {
+      console.error('Error rejecting connection:', error);
+      alert('Failed to reject connection');
+    }
+  };
+
+  const handleMessage = async (userId: string) => {
+    try {
+      const conversation = await getOrCreateConversation(userId);
+      window.location.href = `?page=messages&conversation=${conversation.id}`;
+    } catch (error) {
+      console.error('Error creating conversation:', error);
+      alert('Failed to start conversation');
+    }
   };
 
   const isConnectionPending = (userId: string) => {
@@ -65,8 +133,9 @@ export function ConnectionsPage() {
     );
   };
 
-  const UserCard = ({ user }: { user: typeof mockProfiles[0] }) => {
+  const UserCard = ({ user, showMessage = false }: { user: typeof mockProfiles[0]; showMessage?: boolean }) => {
     const isPending = isConnectionPending(user.id);
+    const isConnected = connectedUserIds.has(user.id);
 
     return (
       <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
@@ -124,27 +193,40 @@ export function ConnectionsPage() {
               </div>
             )}
 
-            <button
-              onClick={() => handleConnect(user.id)}
-              disabled={isPending}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isPending
-                  ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
-            >
-              {isPending ? (
-                <>
-                  <UserCheck size={18} />
-                  <span>Request Sent</span>
-                </>
-              ) : (
-                <>
-                  <UserPlus size={18} />
-                  <span>Connect</span>
-                </>
+            <div className="flex space-x-2">
+              {showMessage && isConnected && (
+                <button
+                  onClick={() => handleMessage(user.id)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+                >
+                  <MessageCircle size={18} />
+                  <span>Message</span>
+                </button>
               )}
-            </button>
+              {!showMessage && (
+                <button
+                  onClick={() => handleConnect(user.id)}
+                  disabled={isPending}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                    isPending
+                      ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  {isPending ? (
+                    <>
+                      <UserCheck size={18} />
+                      <span>Request Sent</span>
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus size={18} />
+                      <span>Connect</span>
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -226,7 +308,7 @@ export function ConnectionsPage() {
                     ? connection.receiverId
                     : connection.requesterId;
                 const user = mockProfiles.find((p) => p.id === userId);
-                return user ? <UserCard key={connection.id} user={user} /> : null;
+                return user ? <UserCard key={connection.id} user={user} showMessage={true} /> : null;
               })}
             </div>
           </div>
